@@ -46,6 +46,52 @@ def signup():
 
 
 
+# Below is the login/sign In Route
+@app.route("/api/signin", methods=["POST"])
+def signin():
+    if request.method == "POST":
+        # Extract the two details entered
+        email = request.form["email"]
+        password = request.form["password"]
+
+        # Print out the details entered
+        # print(email, password)
+
+        # Create/establish a connection to the database
+        connection = pymysql.connect(host="localhost", user="root", password="", database="sokogardenonline")
+
+        # Create cursor
+        cursor = connection.cursor(pymysql.cursors.DictCursor)
+
+        # Structure the sql query that will check whether the email and tha password entered are correct
+        sql = "SELECT * FROM users WHERE email = %s AND password = %s;"
+
+        # Put the data received from the form into a tuple
+        data = (email, password)
+
+        # By use of the cursor execute the sql
+        cursor.execute(sql, data)
+
+        # Check whether there are rows returned and store them on a variable
+        count = cursor.rowcount
+
+
+        # If there are records returned it means that the password and the email are correct otherwise they are wrong.
+        if count == 0:
+            return jsonify({"message" : "Login Failed"})
+        else:
+            # There must be a user so we create a variable that will hold the details of the users fetched from the database
+            user=cursor.fetchone()
+            # Return the details to the front end as well as the message
+            return jsonify({"message" : "User Loggged In successfully", "user":user})
+            
+
+
+
+
+
+
+
 
 
 
